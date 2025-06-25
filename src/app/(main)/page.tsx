@@ -1,11 +1,10 @@
-import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { MainContainer } from "@/components/container/main-container";
 import { Button } from "@/components/ui/button";
 
 export default function HomePage() {
   return (
-    <div>
+    <MainContainer>
       <Button>UwU</Button>
-      <ThemeToggle />
-    </div>
+    </MainContainer>
   );
 }
