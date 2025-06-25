@@ -14,6 +14,7 @@ export function UploadFileButton() {
       <FileUploader
         isOpen={isUploading}
         onClose={() => setIsUploading(false)}
+        onUploadComplete={(result) => console.log("log from button", result)}
       />
       <Button onClick={() => setIsUploading(true)} className="cursor-pointer">
         <Plus className="mr-2 h-4 w-4" />

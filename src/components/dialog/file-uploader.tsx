@@ -2,29 +2,22 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
+import { Check, LoaderCircle, Upload, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { cn, formatFileSize } from "@/lib/utils";
-import { Check, LoaderCircle, Upload, X } from "lucide-react";
-import { toast } from "sonner";
 import { Progress } from "../ui/progress";
+import { cn, formatFileSize } from "@/lib/utils";
 import { DioUploader } from "@/utils/dropio";
-import { useRouter } from "next/navigation";
 
-type FileType = {
-  id: string;
-  name: string;
-  type: string;
-  size: number;
-  uploadedAt: Date;
-  url: string;
-};
+import type { UploadResult } from "@/lib/dropio/client";
 
 type FileUploaderProps = {
   isOpen: boolean;
   onClose: () => void;
-  onUploadComplete?: (file: FileType) => void;
+  onUploadComplete?: (file: UploadResult) => void;
 };
 
 const ALLOWED_MIME_TYPES = [
@@ -36,7 +29,7 @@ const ALLOWED_MIME_TYPES = [
 ];
 
 export function FileUploader(props: FileUploaderProps) {
-  const { isOpen, onClose } = props;
+  const { isOpen, onClose, onUploadComplete } = props;
 
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -68,15 +61,23 @@ export function FileUploader(props: FileUploaderProps) {
     if (result.isError) {
       return handleError(result.message);
     } else {
-      handleOnCompleted();
+      return handleOnCompleted(result);
     }
   };
 
-  const handleOnCompleted = () => {
+  const handleOnCompleted = (result: UploadResult) => {
+    if (result.isError) return;
+
+    if (onUploadComplete) {
+      onUploadComplete(result);
+    }
+
     setIsUploading(false);
+
     toast(`Upload Success`, {
-      description: `uploaded successfully `,
+      description: `uploaded ${result.originalName}`,
     });
+
     handleClose(true);
     router.refresh();
   };
