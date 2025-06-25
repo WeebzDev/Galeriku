@@ -1,10 +1,10 @@
 import { MainContainer } from "@/components/container/main-container";
-import { Button } from "@/components/ui/button";
+import ImagesContainer from "@/components/image/container";
 
 export default function HomePage() {
   return (
     <MainContainer>
-      <Button>UwU</Button>
+      <ImagesContainer />
     </MainContainer>
   );
 }
