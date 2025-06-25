@@ -1,7 +1,7 @@
 import React from "react";
 import { ImagePreview } from "./image-preview";
 
-export default function ImagesContainer() {
+export function ImagesContainer() {
   return (
     <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4">
       {[
