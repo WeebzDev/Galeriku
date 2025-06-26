@@ -1,16 +1,17 @@
 import React from "react";
 import { ImagePreview } from "./image-preview";
 
-export function ImagesContainer() {
+import type { DB_ImagesType } from "@/server/db/schema";
+
+type ImagesContainerProps = {
+  images: DB_ImagesType[];
+};
+
+export function ImagesContainer(props: ImagesContainerProps) {
   return (
     <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4">
-      {[
-        { id: "1", imageUrl: "" },
-        { id: "2", imageUrl: "" },
-        { id: "3", imageUrl: "" },
-        { id: "4", imageUrl: "" },
-      ].map((item) => (
-        <ImagePreview key={item.id} imageUrl={item.imageUrl} />
+      {props.images.map((item) => (
+        <ImagePreview key={item.id} imageUrl={item.url} />
       ))}
     </div>
   );

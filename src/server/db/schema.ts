@@ -10,11 +10,9 @@ import { index, pgTableCreator, primaryKey } from "drizzle-orm/pg-core";
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = pgTableCreator(
-  (name) => `galeriku_${name}`,
-);
+export const createTable = pgTableCreator((name) => `galeriku_${name}`);
 
-export const users = createTable(
+export const usersTable = createTable(
   "users",
   (d) => ({
     id: d.varchar().primaryKey(),
@@ -24,7 +22,9 @@ export const users = createTable(
   (t) => [index("username_idx").on(t.username)],
 );
 
-export const images = createTable("images", (d) => ({
+export type DB_UsersType = typeof usersTable.$inferSelect;
+
+export const imagesTable = createTable("images", (d) => ({
   id: d.varchar({ length: 256 }).primaryKey(),
   userId: d.varchar({ length: 256 }).notNull(),
   name: d.varchar({ length: 256 }).notNull(),
@@ -38,22 +38,28 @@ export const images = createTable("images", (d) => ({
   updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
 }));
 
-export const tags = createTable("tags", (d) => ({
+export type DB_ImagesType = typeof imagesTable.$inferSelect;
+
+export const tagsTable = createTable("tags", (d) => ({
   id: d.varchar({ length: 256 }).primaryKey(),
   name: d.varchar({ length: 256 }).notNull(),
 }));
 
-export const imageTags = createTable(
+export type DB_TagType = typeof tagsTable.$inferSelect;
+
+export const imageTagsTable = createTable(
   "image_tags",
   (d) => ({
     imageId: d
       .varchar("imageId")
       .notNull()
-      .references(() => images.id, { onDelete: "cascade" }),
+      .references(() => imagesTable.id, { onDelete: "cascade" }),
     tagId: d
       .varchar("tagId")
       .notNull()
-      .references(() => tags.id, { onDelete: "cascade" }),
+      .references(() => tagsTable.id, { onDelete: "cascade" }),
   }),
   (t) => [primaryKey({ columns: [t.imageId, t.tagId] })],
 );
+
+export type DB_ImageTagType = typeof imageTagsTable.$inferSelect;

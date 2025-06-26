@@ -13,6 +13,7 @@ import { cn, formatFileSize } from "@/lib/utils";
 import { DioUploader } from "@/utils/dropio";
 
 import type { UploadResult } from "@/lib/dropio/client";
+import { createFile } from "@/server/actions";
 
 type FileUploaderProps = {
   isOpen: boolean;
@@ -61,6 +62,7 @@ export function FileUploader(props: FileUploaderProps) {
     if (result.isError) {
       return handleError(result.message);
     } else {
+      await createFile(result);
       return handleOnCompleted(result);
     }
   };
@@ -119,9 +121,9 @@ export function FileUploader(props: FileUploaderProps) {
     if (isUploading && !isUploadCompleted) return;
 
     onClose();
-    // setTimeout(() => {
-    //   resetUploader();
-    // }, 500);
+    setTimeout(() => {
+      resetUploader();
+    }, 500);
   };
 
   const handleAbortUpload = () => {
