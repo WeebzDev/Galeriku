@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   SidebarContent,
   SidebarFooter,
@@ -13,14 +14,46 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "../ui/sidebar";
+} from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { mainSidebar } from "@/lib/sidebar";
+import { FileUploader } from "@/components/dialog/file-uploader";
 
 export function MainSidebar() {
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+
   return (
     <>
-      <SidebarHeader className="flex h-[70px] w-full items-center justify-center border-b">
-        <h1>Galeriku</h1>
+      <FileUploader
+        isOpen={isUploading}
+        onClose={() => setIsUploading(false)}
+      />
+      <SidebarHeader className="flex h-[70px] w-full items-center justify-center">
+        <DropdownMenu onOpenChange={setDropdownOpen} open={dropdownOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button className="w-full">Baru</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-96"
+            align="start"
+            alignOffset={10}
+            sideOffset={10}
+          >
+            <DropdownMenuItem onClick={() => setIsUploading(true)}>
+              Upload
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Kategori Baru</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
