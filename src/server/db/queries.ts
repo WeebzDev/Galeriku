@@ -1,10 +1,14 @@
 import "server-only";
 
 import { db } from "@/server/db";
-import { imagesTable } from "./schema";
+import { imagesTable, usersTable } from "./schema";
+import { eq } from "drizzle-orm";
 
 export const QUERIES = {
   getAllImages: function () {
     return db.select().from(imagesTable).orderBy(imagesTable.createdAt);
+  },
+  getAdmin: function () {
+    return db.select().from(usersTable).where(eq(usersTable.role, "admin"));
   },
 };

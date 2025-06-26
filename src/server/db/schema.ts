@@ -18,6 +18,7 @@ export const usersTable = createTable(
     id: d.varchar().primaryKey(),
     username: d.varchar({ length: 256 }).notNull(),
     password: d.varchar({ length: 256 }).notNull(),
+    role: d.varchar({ length: 256 }).notNull(),
   }),
   (t) => [index("username_idx").on(t.username)],
 );

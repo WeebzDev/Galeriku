@@ -2,6 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useTransition } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,11 +28,15 @@ import {
   loginFormSchema,
   type loginFormSchemaType,
 } from "@/schemas/login-schema";
+import { login } from "@/server/actions";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
   const form = useForm<loginFormSchemaType>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -39,7 +46,18 @@ export function LoginForm({
   });
 
   function onSubmit(values: loginFormSchemaType) {
-    console.log(values);
+    startTransition(async () => {
+      const response = await login(values);
+
+      if (response?.success) {
+        toast(response.success);
+        router.push("/");
+      }
+
+      if (response?.error) {
+        toast(response.error);
+      }
+    });
   }
 
   return (
@@ -58,6 +76,7 @@ export function LoginForm({
                 <FormField
                   control={form.control}
                   name="username"
+                  disabled={isPending}
                   render={({ field }) => (
                     <FormItem className="grid gap-3">
                       <FormLabel>Username</FormLabel>
@@ -71,6 +90,7 @@ export function LoginForm({
                 <FormField
                   control={form.control}
                   name="password"
+                  disabled={isPending}
                   render={({ field }) => (
                     <FormItem className="grid gap-3">
                       <FormLabel>Password</FormLabel>

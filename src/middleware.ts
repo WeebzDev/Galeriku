@@ -3,12 +3,14 @@ import { NextResponse, type NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const cookie = request.cookies;
   const token = cookie.get("wb-token");
-  const pathname = request.url;
+  const { pathname } = request.nextUrl;
 
-  console.log({ token, pathname });
-
-  if (!token && pathname !== "http://localhost:3000/login") {
+  if (!token && pathname !== "/login") {
     return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (token && pathname === "/login") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return null;
