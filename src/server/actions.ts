@@ -14,13 +14,20 @@ import { imagesTable, usersTable } from "./db/schema";
 import { QUERIES } from "./db/queries";
 import { createJWT } from "@/lib/utils";
 import { cookies } from "next/headers";
+import { getSession } from "./auth";
 
 export const createFile = async (metadata: UploadResult) => {
   if (metadata.isError) return;
 
+  const { error, userId } = await getSession();
+
+  if (error || !userId) {
+    return;
+  }
+
   await db.insert(imagesTable).values({
     id: uuidv7(),
-    userId: "uwu",
+    userId: userId,
     name: metadata.originalName,
     uniqueName: metadata.uniqueName,
     fileSize: metadata.fileSize,
