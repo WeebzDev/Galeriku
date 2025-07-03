@@ -1,7 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { index, pgTableCreator, primaryKey } from "drizzle-orm/pg-core";
 
 /**
@@ -27,7 +27,10 @@ export type DB_UsersType = typeof usersTable.$inferSelect;
 
 export const imagesTable = createTable("images", (d) => ({
   id: d.varchar({ length: 256 }).primaryKey(),
-  userId: d.varchar({ length: 256 }).notNull(),
+  userId: d
+    .varchar({ length: 256 })
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
   name: d.varchar({ length: 256 }).notNull(),
   uniqueName: d.varchar({ length: 256 }).notNull(),
   fileSize: d.bigint({ mode: "number" }).notNull(),
@@ -37,6 +40,17 @@ export const imagesTable = createTable("images", (d) => ({
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
   updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
+}));
+
+export const imagesRelations = relations(imagesTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [imagesTable.userId],
+    references: [usersTable.id],
+  }),
+}));
+
+export const usersRelations = relations(usersTable, ({ many }) => ({
+  images: many(imagesTable),
 }));
 
 export type DB_ImagesType = typeof imagesTable.$inferSelect;
