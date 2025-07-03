@@ -1,10 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,18 +24,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  loginFormSchema,
-  type loginFormSchemaType,
-} from "@/schemas/login-schema";
 import { login } from "@/server/actions";
+import { loginFormSchema, type loginFormSchemaType } from "@/schemas";
+import { FormError } from "@/components/form/form-error";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
 
   const form = useForm<loginFormSchemaType>({
     resolver: zodResolver(loginFormSchema),
@@ -47,15 +46,16 @@ export function LoginForm({
 
   function onSubmit(values: loginFormSchemaType) {
     startTransition(async () => {
-      const response = await login(values);
+      const response = await login(values).catch(() =>
+        setErrorMessage("Something went wrong"),
+      );
 
       if (response?.success) {
         toast(response.success);
-        router.push("/");
       }
 
       if (response?.error) {
-        toast(response.error);
+        setErrorMessage(response.error);
       }
     });
   }
@@ -64,9 +64,9 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>Login</CardTitle>
           <CardDescription>
-            Enter your username below to login to your account
+            Masukan username dan password untuk login
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -101,7 +101,14 @@ export function LoginForm({
                     </FormItem>
                   )}
                 />
+                <FormError message={errorMessage} />
                 <div className="flex flex-col gap-3">
+                  <Link
+                    href={"/auth/register"}
+                    className="text-right text-sm hover:underline"
+                  >
+                    Belum Punya Akun?
+                  </Link>
                   <Button type="submit" className="w-full">
                     Login
                   </Button>

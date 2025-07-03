@@ -8,5 +8,5 @@ export default {
   dbCredentials: {
     url: env.DATABASE_URL,
   },
-  tablesFilter: ["galeriku-weebzdev_*"],
+  tablesFilter: ["galeriku_*"],
 } satisfies Config;
