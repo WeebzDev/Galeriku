@@ -2,6 +2,7 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
 import { relations, sql } from "drizzle-orm";
+import { v7 as uuidv7 } from "uuid";
 import { index, pgTableCreator, primaryKey } from "drizzle-orm/pg-core";
 
 /**
@@ -15,7 +16,10 @@ export const createTable = pgTableCreator((name) => `galeriku_${name}`);
 export const usersTable = createTable(
   "users",
   (d) => ({
-    id: d.varchar().primaryKey(),
+    id: d
+      .varchar()
+      .primaryKey()
+      .$defaultFn(() => uuidv7()),
     username: d.varchar({ length: 256 }).notNull(),
     password: d.varchar({ length: 256 }).notNull(),
     role: d.varchar({ length: 256 }).notNull(),
@@ -26,7 +30,10 @@ export const usersTable = createTable(
 export type DB_UsersType = typeof usersTable.$inferSelect;
 
 export const imagesTable = createTable("images", (d) => ({
-  id: d.varchar({ length: 256 }).primaryKey(),
+  id: d
+    .varchar({ length: 256 })
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
   userId: d
     .varchar({ length: 256 })
     .notNull()
@@ -56,7 +63,10 @@ export const usersRelations = relations(usersTable, ({ many }) => ({
 export type DB_ImagesType = typeof imagesTable.$inferSelect;
 
 export const tagsTable = createTable("tags", (d) => ({
-  id: d.varchar({ length: 256 }).primaryKey(),
+  id: d
+    .varchar({ length: 256 })
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
   name: d.varchar({ length: 256 }).notNull(),
 }));
 

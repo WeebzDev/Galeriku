@@ -11,4 +11,10 @@ export const QUERIES = {
   getAdmin: function () {
     return db.select().from(usersTable).where(eq(usersTable.role, "admin"));
   },
+  getUserByUsername: function (username: string) {
+    return db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.username, username));
+  },
 };

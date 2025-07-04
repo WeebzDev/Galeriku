@@ -15,6 +15,8 @@ import { QUERIES } from "./db/queries";
 import { createJWT } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { getSession } from "./auth";
+import type { responseActions } from "@/type/server";
+import { registerFormSchema, type registerFormSchemaType } from "@/schemas";
 
 export const createFile = async (metadata: UploadResult) => {
   if (metadata.isError) return;
@@ -35,7 +37,9 @@ export const createFile = async (metadata: UploadResult) => {
   });
 };
 
-export const login = async (request: loginFormSchemaType) => {
+export const login = async (
+  request: loginFormSchemaType,
+): Promise<responseActions> => {
   const cookie = await cookies();
 
   const validateFields = loginFormSchema.safeParse(request);
@@ -46,36 +50,62 @@ export const login = async (request: loginFormSchemaType) => {
 
   const { username, password } = validateFields.data;
 
-  const [admin] = await Promise.all([QUERIES.getAdmin()]);
+  const users = await QUERIES.getUserByUsername(username);
+  const existingUser = users[0];
 
-  if (!admin.length || !admin[0]) {
-    const hashPassword = await argon2.hash(password);
-    const user = await db
-      .insert(usersTable)
-      .values({
-        id: uuidv7(),
-        username: username,
-        password: hashPassword,
-        role: "admin",
-      })
-      .returning();
-
-    const jwt = await createJWT({ jti: user[0]!.id, sub: user[0]!.role });
-
-    cookie.set("wb-token", jwt);
-
-    return { success: "Login Success" };
+  if (!existingUser) {
+    return { error: "Akun tidak ditemukan" };
   }
 
-  const validPassword = await argon2.verify(admin[0].password, password);
+  const comparePassword = await argon2.verify(existingUser.password, password);
 
-  if (!validPassword) {
+  if (!comparePassword) {
     return { error: "Invalid Password" };
   }
 
-  const jwt = await createJWT({ jti: admin[0].id });
+  const jwt = await createJWT({ jti: existingUser.id });
 
-  cookie.set("wb-token", jwt);
+  cookie.set("weebzdev.gl-token", jwt, {
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+    sameSite: "strict",
+    secure: true,
+  });
 
   return { success: "Login Success" };
+};
+
+export const register = async (
+  request: registerFormSchemaType,
+): Promise<responseActions> => {
+  const validateFields = registerFormSchema.safeParse(request);
+
+  if (!validateFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { username, password, confirm_password } = validateFields.data;
+
+  if (password !== confirm_password) {
+    return { error: "Password dan confirm password berbeda!" };
+  }
+
+  const admin = await QUERIES.getAdmin();
+  const existingAdmin = admin[0];
+
+  if (existingAdmin) {
+    return {
+      error:
+        "Akun admin sudah pernah dibuat, mohon untuk login pada akun tersebut!",
+    };
+  }
+
+  const hashPassword = await argon2.hash(password);
+  await db.insert(usersTable).values({
+    username: username,
+    password: hashPassword,
+    role: "admin",
+  });
+
+  return { success: "Akun berhasil dibuat" };
 };

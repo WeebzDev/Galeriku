@@ -1,19 +1,26 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+const PUBLIC_PATHS = ["/auth/login", "/auth/register"];
+
 export function middleware(request: NextRequest) {
-  const cookie = request.cookies;
-  const token = cookie.get("wb-token");
+  const token = request.cookies.get("weebzdev.gl-token");
   const { pathname } = request.nextUrl;
 
-  if (!token && pathname !== "/login") {
-    return NextResponse.redirect(new URL("/login", request.url));
+  const isPublicPath = PUBLIC_PATHS.includes(pathname);
+  const isLoginPath = pathname === "/auth/login";
+
+  // Redirect unauthenticated users trying to access protected routes
+  if (!token && !isPublicPath) {
+    return NextResponse.redirect(new URL("/auth/login", request.url));
   }
 
-  if (token && pathname === "/login") {
+  // Redirect authenticated users away from the login page
+  if (token && isLoginPath) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  return null;
+  // Allow request to proceed
+  return NextResponse.next();
 }
 
 export const config = {
