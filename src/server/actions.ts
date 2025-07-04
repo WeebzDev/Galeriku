@@ -1,6 +1,5 @@
 "use server";
 
-import { v7 as uuidv7 } from "uuid";
 import * as argon2 from "argon2";
 
 import type { UploadResult } from "@/lib/dropio/client";
@@ -18,23 +17,26 @@ import { getSession } from "./auth";
 import type { responseActions } from "@/type/server";
 import { registerFormSchema, type registerFormSchemaType } from "@/schemas";
 
-export const createFile = async (metadata: UploadResult) => {
-  if (metadata.isError) return;
+export const createFile = async (
+  metadata: UploadResult,
+): Promise<responseActions> => {
+  if (metadata.isError) return { error: "Invalid Metadata" };
 
-  const { error, userId } = await getSession();
+  const { error, user } = await getSession();
 
-  if (error || !userId) {
-    return;
+  if (error || !user) {
+    return { error: "Mohon Untuk login terlebih dahulu!" };
   }
 
   await db.insert(imagesTable).values({
-    id: uuidv7(),
-    userId: userId,
+    userId: user.id,
     name: metadata.originalName,
     uniqueName: metadata.uniqueName,
     fileSize: metadata.fileSize,
     url: metadata.fileUrl,
   });
+
+  return { success: "Berhasil menambahkan gambar!" };
 };
 
 export const login = async (

@@ -17,4 +17,10 @@ export const QUERIES = {
       .from(usersTable)
       .where(eq(usersTable.username, username));
   },
+  getUserByUserId: function (id: string) {
+    return db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, id));
+  },
 };
