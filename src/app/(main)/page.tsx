@@ -17,7 +17,7 @@ export default async function HomePage() {
       <div className="flex w-full items-center justify-start md:justify-end">
         <TagList tags={tags} />
       </div>
-      <ImagesContainer images={images} />
+      <ImagesContainer images={images} tags={tags} />
     </MainContainer>
   );
 }

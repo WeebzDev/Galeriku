@@ -18,6 +18,7 @@ import {
   type createTagSchemaType,
   type registerFormSchemaType,
 } from "@/schemas";
+import { inArray } from "drizzle-orm";
 
 export const createFile = async (
   metadata: UploadResult,
@@ -63,6 +64,28 @@ export const createTag = async (
   });
 
   return { success: "Berhasil membuat tag baru!" };
+};
+
+export const changeTagInImage = async (
+  selectedImage: string[],
+  tagId: string,
+): Promise<responseActions> => {
+  const { error, user } = await getSession();
+
+  if (error || !user) {
+    return { error: "Mohon Untuk login terlebih dahulu!" };
+  }
+
+  if (!selectedImage.length) {
+    return { error: "Minimal pilih satu gambar!" };
+  }
+
+  await db
+    .update(imagesTable)
+    .set({ tagId: tagId })
+    .where(inArray(imagesTable.id, selectedImage));
+
+  return { success: "Berhasil mengganti tag paga gambar!" };
 };
 
 export const login = async (

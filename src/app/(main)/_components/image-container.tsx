@@ -4,11 +4,13 @@ import { useState } from "react";
 
 import { ImagePreview } from "@/app/(main)/_components/image-preview";
 
-import type { DB_ImagesType } from "@/server/db/schema";
-import { Button } from "@/components/ui/button";
+import type { DB_ImagesType, DB_TagType } from "@/server/db/schema";
+
+import { AddTagsToImage } from "./add-tags-to-image";
 
 type ImagesContainerProps = {
   images: DB_ImagesType[];
+  tags: DB_TagType[];
 };
 
 export function ImagesContainer(props: ImagesContainerProps) {
@@ -28,11 +30,15 @@ export function ImagesContainer(props: ImagesContainerProps) {
     return selected.length ? true : false;
   };
 
-  console.log({ selectedImage });
-
   return (
     <>
-      {selectedImage.length ? <AddTagsToImage /> : null}
+      {selectedImage.length ? (
+        <AddTagsToImage
+          tags={props.tags}
+          selectedImage={selectedImage}
+          setSelectedImage={setSelectedImage}
+        />
+      ) : null}
 
       <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4">
         {props.images.map((item) => (
@@ -46,13 +52,5 @@ export function ImagesContainer(props: ImagesContainerProps) {
         ))}
       </div>
     </>
-  );
-}
-
-function AddTagsToImage() {
-  return (
-    <div className="fixed right-10 bottom-10 z-50">
-      <Button>Tambahkan Tag</Button>
-    </div>
   );
 }
