@@ -3,7 +3,7 @@
 
 import { relations, sql } from "drizzle-orm";
 import { v7 as uuidv7 } from "uuid";
-import { index, pgTableCreator, primaryKey } from "drizzle-orm/pg-core";
+import { index, pgTableCreator } from "drizzle-orm/pg-core";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -38,6 +38,7 @@ export const imagesTable = createTable("images", (d) => ({
     .varchar({ length: 256 })
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
+  tagId: d.varchar({ length: 256 }).notNull().default(""),
   name: d.varchar({ length: 256 }).notNull(),
   uniqueName: d.varchar({ length: 256 }).notNull(),
   fileSize: d.bigint({ mode: "number" }).notNull(),
@@ -72,19 +73,19 @@ export const tagsTable = createTable("tags", (d) => ({
 
 export type DB_TagType = typeof tagsTable.$inferSelect;
 
-export const imageTagsTable = createTable(
-  "image_tags",
-  (d) => ({
-    imageId: d
-      .varchar("imageId")
-      .notNull()
-      .references(() => imagesTable.id, { onDelete: "cascade" }),
-    tagId: d
-      .varchar("tagId")
-      .notNull()
-      .references(() => tagsTable.id, { onDelete: "cascade" }),
-  }),
-  (t) => [primaryKey({ columns: [t.imageId, t.tagId] })],
-);
+// export const imageTagsTable = createTable(
+//   "image_tags",
+//   (d) => ({
+//     imageId: d
+//       .varchar("imageId")
+//       .notNull()
+//       .references(() => imagesTable.id, { onDelete: "cascade" }),
+//     tagId: d
+//       .varchar("tagId")
+//       .notNull()
+//       .references(() => tagsTable.id, { onDelete: "cascade" }),
+//   }),
+//   (t) => [primaryKey({ columns: [t.imageId, t.tagId] })],
+// );
 
-export type DB_ImageTagType = typeof imageTagsTable.$inferSelect;
+// export type DB_ImageTagType = typeof imageTagsTable.$inferSelect;
