@@ -68,7 +68,7 @@ export const tagsTable = createTable("tags", (d) => ({
     .varchar({ length: 256 })
     .primaryKey()
     .$defaultFn(() => uuidv7()),
-  name: d.varchar({ length: 256 }).notNull(),
+  name: d.varchar({ length: 256 }).notNull().unique(),
 }));
 
 export type DB_TagType = typeof tagsTable.$inferSelect;
