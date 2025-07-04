@@ -8,10 +8,13 @@ import {
 import { MainSidebar } from "@/components/layout/main-sidebar";
 import { LoadingSpinner } from "@/components/loading/loading-spinner";
 import { MainNavbar } from "@/components/navbar/main-navbar";
+import { getSession } from "@/server/auth";
 
-export default function MainLayout({
+export default async function MainLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const session = await getSession();
+
   return (
     <div>
       <SidebarProvider>
@@ -24,7 +27,7 @@ export default function MainLayout({
                 </div>
               }
             >
-              <MainSidebar />
+              <MainSidebar session={session} />
             </Suspense>
           </Sidebar>
           <SidebarInset className="w-full flex-1">

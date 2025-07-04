@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   SidebarContent,
   SidebarFooter,
@@ -25,8 +25,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { mainSidebar } from "@/lib/sidebar";
 import { FileUploader } from "@/components/dialog/file-uploader";
+import type { Session } from "@/type/server";
 
-export function MainSidebar() {
+type MainSidebarProps = {
+  session: Session;
+};
+
+export function MainSidebar(props: MainSidebarProps) {
+  const { session } = props;
+
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
@@ -85,11 +92,12 @@ export function MainSidebar() {
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <Avatar>
-              <AvatarImage src={""} />
-              <AvatarFallback>{"username".slice(0, 2)}</AvatarFallback>
+              <AvatarFallback>
+                {session.user?.username.slice(0, 2)}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <p className="text-sm font-medium">{"username"}</p>
+              <p className="text-sm font-medium">{session.user?.username}</p>
             </div>
           </div>
         </div>
