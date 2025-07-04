@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isPublicPath = PUBLIC_PATHS.includes(pathname);
-  const isLoginPath = pathname === "/auth/login";
+  const isLoginPath = pathname.startsWith('/auth/')
 
   // Redirect unauthenticated users trying to access protected routes
   if (!token && !isPublicPath) {
