@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { mainSidebar } from "@/lib/sidebar";
 import { FileUploader } from "@/components/dialog/file-uploader";
 import type { Session } from "@/type/server";
+import { CreateTag } from "../dialog/create-tag";
 
 type MainSidebarProps = {
   session: Session;
@@ -36,6 +37,7 @@ export function MainSidebar(props: MainSidebarProps) {
 
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isCreateTag, setIsCreateTag] = useState<boolean>(false);
 
   return (
     <>
@@ -43,6 +45,8 @@ export function MainSidebar(props: MainSidebarProps) {
         isOpen={isUploading}
         onClose={() => setIsUploading(false)}
       />
+      <CreateTag isOpen={isCreateTag} onClose={setIsCreateTag} />
+
       <SidebarHeader className="flex h-[70px] w-full items-center justify-center">
         <DropdownMenu onOpenChange={setDropdownOpen} open={dropdownOpen}>
           <DropdownMenuTrigger asChild>
@@ -61,7 +65,10 @@ export function MainSidebar(props: MainSidebarProps) {
               Upload
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => setIsCreateTag(true)}
+              className="cursor-pointer"
+            >
               Kategori Baru
             </DropdownMenuItem>
           </DropdownMenuContent>

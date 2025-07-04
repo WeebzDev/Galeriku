@@ -3,19 +3,21 @@
 import * as argon2 from "argon2";
 
 import type { UploadResult } from "@/lib/dropio/client";
-import {
-  loginFormSchema,
-  type loginFormSchemaType,
-} from "@/schemas/login-schema";
-
 import { db } from "./db";
-import { imagesTable, usersTable } from "./db/schema";
+import { imagesTable, tagsTable, usersTable } from "./db/schema";
 import { QUERIES } from "./db/queries";
 import { createJWT } from "@/lib/utils";
 import { cookies } from "next/headers";
 import { getSession } from "./auth";
 import type { responseActions } from "@/type/server";
-import { registerFormSchema, type registerFormSchemaType } from "@/schemas";
+import {
+  createTagSchema,
+  registerFormSchema,
+  loginFormSchema,
+  type loginFormSchemaType,
+  type createTagSchemaType,
+  type registerFormSchemaType,
+} from "@/schemas";
 
 export const createFile = async (
   metadata: UploadResult,
@@ -37,6 +39,30 @@ export const createFile = async (
   });
 
   return { success: "Berhasil menambahkan gambar!" };
+};
+
+export const createTag = async (
+  request: createTagSchemaType,
+): Promise<responseActions> => {
+  const validateFields = createTagSchema.safeParse(request);
+
+  if (!validateFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { name } = validateFields.data;
+
+  const { error, user } = await getSession();
+
+  if (error || !user) {
+    return { error: "Mohon Untuk login terlebih dahulu!" };
+  }
+
+  await db.insert(tagsTable).values({
+    name: name,
+  });
+
+  return { success: "Berhasil membuat tag baru!" };
 };
 
 export const login = async (

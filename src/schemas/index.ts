@@ -23,6 +23,8 @@ export const registerFormSchema = z.object({
     }),
 });
 
+export type registerFormSchemaType = z.infer<typeof registerFormSchema>;
+
 export const loginFormSchema = z.object({
   username: z
     .string()
@@ -38,5 +40,13 @@ export const loginFormSchema = z.object({
     }),
 });
 
-export type registerFormSchemaType = z.infer<typeof registerFormSchema>;
 export type loginFormSchemaType = z.infer<typeof loginFormSchema>;
+
+export const createTagSchema = z.object({
+  name: z
+    .string()
+    .min(2, { message: "Nama tag minimal 2 karakter." })
+    .max(15, { message: "Nama tag maksimal 15 karakter." }),
+});
+
+export type createTagSchemaType = z.infer<typeof createTagSchema>;
