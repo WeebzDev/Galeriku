@@ -1,6 +1,8 @@
 "use client";
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
+import { useRouter } from "next/navigation";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,13 +22,27 @@ import type { DB_TagType } from "@/server/db/schema";
 
 type TagListProps = {
   tags: DB_TagType[];
+  filter: string | undefined;
 };
 
 export function TagList(props: TagListProps) {
-  const { tags } = props;
+  const { tags, filter } = props;
 
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState(filter ?? "");
+
+  const router = useRouter();
+
+  React.useEffect(() => {
+    setValue(filter ?? "");
+  }, [filter]);
+
+  React.useEffect(() => {
+    if (!value) return;
+
+    router.push(`/?tags=${value}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

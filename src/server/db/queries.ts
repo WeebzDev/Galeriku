@@ -8,6 +8,15 @@ export const QUERIES = {
   getAllImages: function () {
     return db.select().from(imagesTable).orderBy(imagesTable.createdAt);
   },
+  getAllImagesFilter: function (tag: string | undefined) {
+    tag ??= "";
+
+    return db
+      .select()
+      .from(imagesTable)
+      .orderBy(imagesTable.createdAt)
+      .where(eq(imagesTable.tagId, tag));
+  },
   getAdmin: function () {
     return db.select().from(usersTable).where(eq(usersTable.role, "admin"));
   },
