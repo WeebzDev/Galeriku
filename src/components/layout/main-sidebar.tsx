@@ -47,11 +47,16 @@ export function MainSidebar() {
             alignOffset={10}
             sideOffset={10}
           >
-            <DropdownMenuItem onClick={() => setIsUploading(true)}>
+            <DropdownMenuItem
+              onClick={() => setIsUploading(true)}
+              className="cursor-pointer"
+            >
               Upload
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Kategori Baru</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Kategori Baru
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarHeader>
