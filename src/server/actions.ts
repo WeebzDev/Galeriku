@@ -59,6 +59,14 @@ export const createTag = async (
     return { error: "Mohon Untuk login terlebih dahulu!" };
   }
 
+  const [tags] = await QUERIES.getTagsByName(name);
+
+  if (tags) {
+    return {
+      error: "Tag ini sudah pernah dibuat, mohon buat dengan nama lain!",
+    };
+  }
+
   await db.insert(tagsTable).values({
     name: name,
   });

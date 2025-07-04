@@ -53,7 +53,7 @@ export function AddTagsToImage(props: AddTagsToImageProps) {
 
       if (response?.success) {
         toast(response.success);
-        setSelectedImage([])
+        setSelectedImage([]);
       }
 
       if (response?.error) {
@@ -120,7 +120,11 @@ export function AddTagsToImage(props: AddTagsToImageProps) {
             </Popover>
             <FormError message={errorMessage} />
             <div className="flex w-full items-center justify-end">
-              <Button onClick={handleUpdateTag} disabled={isPending}>
+              <Button
+                onClick={handleUpdateTag}
+                disabled={isPending}
+                className="w-full"
+              >
                 Simpan
               </Button>
             </div>

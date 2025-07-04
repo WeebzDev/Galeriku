@@ -2,7 +2,7 @@ import "server-only";
 
 import { db } from "@/server/db";
 import { imagesTable, tagsTable, usersTable } from "./schema";
-import { eq } from "drizzle-orm";
+import { eq, ilike } from "drizzle-orm";
 
 export const QUERIES = {
   getAllImages: function () {
@@ -22,5 +22,8 @@ export const QUERIES = {
   },
   getAllTags: function () {
     return db.select().from(tagsTable);
+  },
+  getTagsByName: function (name: string) {
+    return db.select().from(tagsTable).where(ilike(tagsTable.name, name));
   },
 };
