@@ -2,17 +2,25 @@
 
 "use client";
 
-import { ClipboardCopy, ImageOff, LoaderCircle } from "lucide-react";
 import Image from "next/image";
+import { ClipboardCopy, ImageOff, LoaderCircle } from "lucide-react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 
+import type { DB_ImagesType } from "@/server/db/schema";
+import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
+
 type ImageCardProps = {
-  imageUrl: string;
+  image: DB_ImagesType;
+  handleSelectImage: (imageId: string) => void;
+  handleRemoveSelectImage: (imageId: string) => void;
+  currentImage: (imageId: string) => boolean;
 };
 
 export function ImagePreview(props: ImageCardProps) {
-  const { imageUrl } = props;
+  const { image, handleSelectImage, handleRemoveSelectImage, currentImage } =
+    props;
 
   const [isPending, startTransition] = useTransition();
 
@@ -63,7 +71,7 @@ export function ImagePreview(props: ImageCardProps) {
     <div className="group bg-secondary/50 relative z-10 mb-4 cursor-pointer break-inside-avoid overflow-hidden rounded-xl">
       <div
         title="Copy To Clipboard"
-        onClick={() => convertAndCopyImage(imageUrl)}
+        onClick={() => convertAndCopyImage(image.url)}
         className="bg-background/85 absolute top-2 right-2 z-10 hidden rounded-md border p-2 backdrop-blur-md group-hover:block"
       >
         {isPending ? (
@@ -72,15 +80,31 @@ export function ImagePreview(props: ImageCardProps) {
           <ClipboardCopy size={18} />
         )}
       </div>
-      {!imageUrl ? (
+      <div
+        title="Select Image"
+        className={cn(
+          "bg-background/85 absolute top-2 left-2 z-10 hidden rounded-md border p-2 pb-1 backdrop-blur-md group-hover:block",
+          currentImage(image.id) && "block",
+        )}
+      >
+        <Checkbox
+          onCheckedChange={(checked) =>
+            checked
+              ? handleSelectImage(image.id)
+              : handleRemoveSelectImage(image.id)
+          }
+          className=""
+        />
+      </div>
+      {!image ? (
         <div className="flex h-40 items-center justify-center">
           <ImageOff />
         </div>
       ) : (
         <Image
           className="max-h-[480px] w-full object-cover 2xl:max-h-[860px]"
-          src={imageUrl}
-          alt={imageUrl}
+          src={image.url}
+          alt={image.url}
           width={720}
           height={720}
           loading="lazy"

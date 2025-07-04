@@ -1,7 +1,7 @@
 import { MainContainer } from "@/components/container/main-container";
-import { ImagesContainer } from "@/components/image/container";
 import { QUERIES } from "@/server/db/queries";
 
+import { ImagesContainer } from "./_components/image-container";
 import { TagList } from "./_components/tag-list";
 
 export const revalidate = 0;
