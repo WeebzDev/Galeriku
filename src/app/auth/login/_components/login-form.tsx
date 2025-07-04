@@ -55,6 +55,7 @@ export function LoginForm({
 
       if (response?.success) {
         toast(response.success);
+        setErrorMessage("");
         router.push("/auth/login");
       }
 

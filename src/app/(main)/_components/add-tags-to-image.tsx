@@ -54,6 +54,7 @@ export function AddTagsToImage(props: AddTagsToImageProps) {
       if (response?.success) {
         toast(response.success);
         setSelectedImage([]);
+        setErrorMessage("");
       }
 
       if (response?.error) {
@@ -66,11 +67,11 @@ export function AddTagsToImage(props: AddTagsToImageProps) {
     <div className="fixed right-10 bottom-10 z-50">
       <Dialog>
         <DialogTrigger asChild>
-          <Button>Tambahkan Tag</Button>
+          <Button>Ubah Tag</Button>
         </DialogTrigger>
         <DialogContent className="w-fit">
           <DialogHeader>
-            <DialogTitle>Setting Tag Gambar</DialogTitle>
+            <DialogTitle>Ubah Tag Gambar</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-y-4">
             <Popover open={open} onOpenChange={setOpen}>

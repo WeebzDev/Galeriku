@@ -53,6 +53,7 @@ export function RegisterForm({
 
       if (response?.success) {
         toast(response.success);
+        setErrorMessage("");
         router.push("/auth/login");
       }
 

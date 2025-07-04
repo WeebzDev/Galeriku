@@ -53,6 +53,7 @@ export function CreateTag(props: CreateTagProps) {
 
       if (response?.success) {
         toast(response.success);
+        setErrorMessage("");
         setTimeout(() => {
           router.refresh();
           onClose(false);
