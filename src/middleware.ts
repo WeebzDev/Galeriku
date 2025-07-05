@@ -1,13 +1,16 @@
+import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 
 const PUBLIC_PATHS = ["/auth/login", "/auth/register"];
 
-export function middleware(request: NextRequest) {
-  const token = request.cookies.get("weebzdev.gl-token");
+export async function middleware(request: NextRequest) {
+  const cookie = await cookies();
+  const token = cookie.get("weebzdev.gl-token")?.value;
+
   const { pathname } = request.nextUrl;
 
   const isPublicPath = PUBLIC_PATHS.includes(pathname);
-  const isLoginPath = pathname.startsWith('/auth/')
+  const isLoginPath = pathname.startsWith("/auth/");
 
   // Redirect unauthenticated users trying to access protected routes
   if (!token && !isPublicPath) {
