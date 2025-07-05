@@ -7,22 +7,22 @@ export async function middleware(request: NextRequest) {
   const cookie = await cookies();
   const token = cookie.get("weebzdev.gl-token")?.value;
 
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  const hasToken = token ?? cookieHeader.includes("weebzdev.gl-token=");
+
   const { pathname } = request.nextUrl;
 
   const isPublicPath = PUBLIC_PATHS.includes(pathname);
   const isLoginPath = pathname.startsWith("/auth/");
 
-  // Redirect unauthenticated users trying to access protected routes
-  if (!token && !isPublicPath) {
+  if (!hasToken && !isPublicPath) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
 
-  // Redirect authenticated users away from the login page
-  if (token && isLoginPath) {
+  if (hasToken && isLoginPath) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // Allow request to proceed
   return NextResponse.next();
 }
 
