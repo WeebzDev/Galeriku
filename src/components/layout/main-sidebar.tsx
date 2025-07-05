@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -25,8 +26,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { mainSidebar } from "@/lib/sidebar";
 import { FileUploader } from "@/components/dialog/file-uploader";
-import type { Session } from "@/type/server";
 import { CreateTag } from "../dialog/create-tag";
+import { logout } from "@/server/actions";
+
+import type { Session } from "@/type/server";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type MainSidebarProps = {
   session: Session;
@@ -38,6 +43,17 @@ export function MainSidebar(props: MainSidebarProps) {
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isCreateTag, setIsCreateTag] = useState<boolean>(false);
+
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const response = await logout();
+
+    if (response.success) {
+      toast(response.success);
+      router.push("/auth/login");
+    }
+  };
 
   return (
     <>
@@ -105,6 +121,13 @@ export function MainSidebar(props: MainSidebarProps) {
             </Avatar>
             <div className="flex-1">
               <p className="text-sm font-medium">{session.user?.username}</p>
+            </div>
+            <div
+              className="cursor-pointer"
+              onClick={handleLogout}
+              title="Logout"
+            >
+              <LogOut size={18} />
             </div>
           </div>
         </div>

@@ -168,3 +168,11 @@ export const register = async (
 
   return { success: "Akun berhasil dibuat" };
 };
+
+export const logout = async (): Promise<responseActions> => {
+  const cookie = await cookies();
+
+  cookie.delete("weebzdev.gl-token");
+
+  return { success: "Berhasil Logout" };
+};
