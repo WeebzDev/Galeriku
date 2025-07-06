@@ -1,14 +1,16 @@
 "use server";
 
 import * as argon2 from "argon2";
+import { eq, inArray } from "drizzle-orm";
+import { cookies } from "next/headers";
 
-import type { UploadResult } from "@/lib/dropio/client";
 import { db } from "./db";
 import { imagesTable, tagsTable, usersTable } from "./db/schema";
 import { QUERIES } from "./db/queries";
-import { createJWT } from "@/lib/utils";
-import { cookies } from "next/headers";
 import { getSession } from "./auth";
+
+import { createJWT } from "@/lib/utils";
+import type { UploadResult } from "@/lib/dropio/client";
 import type { responseActions } from "@/type/server";
 import {
   createTagSchema,
@@ -18,7 +20,6 @@ import {
   type createTagSchemaType,
   type registerFormSchemaType,
 } from "@/schemas";
-import { inArray } from "drizzle-orm";
 
 export const createFile = async (
   metadata: UploadResult,
@@ -210,6 +211,38 @@ export const createNewMember = async (
   });
 
   return { success: "Akun berhasil dibuat" };
+};
+
+export const deleteMember = async (
+  memberId: string,
+): Promise<responseActions> => {
+  if (!memberId) {
+    return { error: "Member Id Required!" };
+  }
+
+  const { error, user: session } = await getSession();
+
+  if (error || !session) {
+    return { error: "Mohon Untuk login terlebih dahulu!" };
+  }
+
+  if (session.role !== "admin") {
+    return { error: "Hanya admin yang dapat menghapus member!" };
+  }
+
+  const [user] = await QUERIES.getUserByUserId(memberId);
+
+  console.log({ user, memberId });
+
+  if (!user) {
+    return {
+      error: "User Tidak Ditemukan",
+    };
+  }
+
+  await db.delete(usersTable).where(eq(usersTable.id, memberId));
+
+  return { success: "Akun berhasil dihapus" };
 };
 
 export const logout = async (): Promise<responseActions> => {
