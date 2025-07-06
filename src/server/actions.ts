@@ -184,6 +184,16 @@ export const createNewMember = async (
     return { error: "Password dan confirm password berbeda!" };
   }
 
+  const { error, user: session } = await getSession();
+
+  if (error || !session) {
+    return { error: "Mohon Untuk login terlebih dahulu!" };
+  }
+
+  if (session.role !== "admin") {
+    return { error: "Hanya admin yang dapat membuat member baru!" };
+  }
+
   const [user] = await QUERIES.getUserByUsername(username);
 
   if (user) {
