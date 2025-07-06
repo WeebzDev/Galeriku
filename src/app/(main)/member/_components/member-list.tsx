@@ -1,18 +1,21 @@
 "use client";
 
 import { Trash } from "lucide-react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { deleteMember } from "@/server/actions";
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { FormError } from "@/components/form/form-error";
+
+import type { DB_UsersType } from "@/server/db/schema";
 
 type MemberListProps = {
   username: string;
   memberId: string;
+  session: DB_UsersType | null;
 };
 
 export function MemberList(props: MemberListProps) {
@@ -46,17 +49,19 @@ export function MemberList(props: MemberListProps) {
       <CardHeader>
         <CardTitle>{username}</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <FormError message={errorMessage} />
-        <Button
-          className="w-full"
-          title="Delete Member"
-          onClick={handleDeleteMember}
-          disabled={isPending}
-        >
-          <Trash />
-        </Button>
-      </CardContent>
+      {props.session?.role === "admin" ? (
+        <CardContent className="space-y-4">
+          <FormError message={errorMessage} />
+          <Button
+            className="w-full"
+            title="Delete Member"
+            onClick={handleDeleteMember}
+            disabled={isPending}
+          >
+            <Trash />
+          </Button>
+        </CardContent>
+      ) : null}
     </Card>
   );
 }
