@@ -14,7 +14,7 @@ export async function MemberWrapper(props: MemberWrapperProps) {
   return (
     <>
       {member.length ? (
-        <div className="grid w-full grid-cols-1 md:grid-cols-3">
+        <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-3">
           {member.map((item) => (
             <MemberList
               key={item.id}
@@ -26,7 +26,9 @@ export async function MemberWrapper(props: MemberWrapperProps) {
         </div>
       ) : (
         <div className="flex w-full items-center justify-center">
-          <p className="text-muted-foreground text-center">Member Tidak Ditemukan</p>
+          <p className="text-muted-foreground text-center">
+            Member Tidak Ditemukan
+          </p>
         </div>
       )}
     </>
