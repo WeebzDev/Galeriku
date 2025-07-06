@@ -1,10 +1,15 @@
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function MemberList() {
+type MemberListProps = {
+  username: string;
+};
+
+export function MemberList(props: MemberListProps) {
+  const { username } = props;
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Name</CardTitle>
+        <CardTitle>{username}</CardTitle>
       </CardHeader>
     </Card>
   );

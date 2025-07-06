@@ -35,4 +35,7 @@ export const QUERIES = {
   getTagsByName: function (name: string) {
     return db.select().from(tagsTable).where(ilike(tagsTable.name, name));
   },
+  getAllMember: function () {
+    return db.select().from(usersTable).where(eq(usersTable.role, "member"));
+  },
 };
