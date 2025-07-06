@@ -55,6 +55,14 @@ export function MainSidebar(props: MainSidebarProps) {
     }
   };
 
+  const handleUpload = async () => {
+    if (!session) {
+      await handleLogout();
+    }
+
+    setIsUploading(true);
+  };
+
   return (
     <>
       <FileUploader
@@ -75,7 +83,7 @@ export function MainSidebar(props: MainSidebarProps) {
             sideOffset={10}
           >
             <DropdownMenuItem
-              onClick={() => setIsUploading(true)}
+              onClick={() => handleUpload()}
               className="cursor-pointer"
             >
               Upload

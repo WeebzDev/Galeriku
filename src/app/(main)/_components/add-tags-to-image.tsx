@@ -2,6 +2,9 @@
 
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,8 +20,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { DB_TagType } from "@/server/db/schema";
-
 import {
   Dialog,
   DialogContent,
@@ -26,9 +27,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { changeTagInImage } from "@/server/actions";
-import { toast } from "sonner";
+import { changeTagInImage, logout } from "@/server/actions";
 import { FormError } from "@/components/form/form-error";
+
+import type { DB_TagType } from "@/server/db/schema";
 
 type AddTagsToImageProps = {
   tags: DB_TagType[];
@@ -44,6 +46,16 @@ export function AddTagsToImage(props: AddTagsToImageProps) {
   const [errorMessage, setErrorMessage] = React.useState<string>("");
 
   const [isPending, startTransition] = React.useTransition();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const response = await logout();
+
+    if (response.success) {
+      toast(response.success);
+      router.push("/auth/login");
+    }
+  };
 
   const handleUpdateTag = () => {
     startTransition(async () => {
@@ -58,6 +70,9 @@ export function AddTagsToImage(props: AddTagsToImageProps) {
       }
 
       if (response?.error) {
+        if (response.error === "Mohon Untuk login terlebih dahulu!") {
+          await handleLogout();
+        }
         setErrorMessage(response.error);
       }
     });

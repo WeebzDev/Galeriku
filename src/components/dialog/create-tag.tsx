@@ -24,7 +24,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { createTagSchema, type createTagSchemaType } from "@/schemas";
-import { createTag } from "@/server/actions";
+import { createTag, logout } from "@/server/actions";
 import { FormError } from "../form/form-error";
 
 type CreateTagProps = {
@@ -39,6 +39,15 @@ export function CreateTag(props: CreateTagProps) {
 
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  const handleLogout = async () => {
+    const response = await logout();
+
+    if (response.success) {
+      toast(response.success);
+      router.push("/auth/login");
+    }
+  };
 
   const form = useForm<createTagSchemaType>({
     resolver: zodResolver(createTagSchema),
@@ -62,6 +71,9 @@ export function CreateTag(props: CreateTagProps) {
       }
 
       if (response?.error) {
+        if (response.error === "Mohon Untuk login terlebih dahulu!") {
+          await handleLogout();
+        }
         setErrorMessage(response.error);
       }
     });
