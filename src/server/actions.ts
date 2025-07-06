@@ -169,6 +169,39 @@ export const register = async (
   return { success: "Akun berhasil dibuat" };
 };
 
+export const createNewMember = async (
+  request: registerFormSchemaType,
+): Promise<responseActions> => {
+  const validateFields = registerFormSchema.safeParse(request);
+
+  if (!validateFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { username, password, confirm_password } = validateFields.data;
+
+  if (password !== confirm_password) {
+    return { error: "Password dan confirm password berbeda!" };
+  }
+
+  const [user] = await QUERIES.getUserByUsername(username);
+
+  if (user) {
+    return {
+      error: "Username ini sudah pernah dibuat, mohon gunakan username lain!",
+    };
+  }
+
+  const hashPassword = await argon2.hash(password);
+  await db.insert(usersTable).values({
+    username: username,
+    password: hashPassword,
+    role: "member",
+  });
+
+  return { success: "Akun berhasil dibuat" };
+};
+
 export const logout = async (): Promise<responseActions> => {
   const cookie = await cookies();
 
