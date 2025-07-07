@@ -71,6 +71,13 @@ export type UploadMetadataResponse =
   | { isError: false; presignedUrl: string; key: string }
   | { isError: true; message: string };
 
+export type BucketDetailsType = {
+  appId: string;
+  name: string;
+  quota: number;
+  quotaUsage: number;
+};
+
 function parseSize(size: string | number): number {
   if (typeof size === "number") return size;
 
@@ -262,6 +269,48 @@ export class DIOApi {
     } catch (error) {
       console.error("Error deleting file:", error);
       return { error: "Error During deleting File" };
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+  async bucketDetails(): Promise<responseDIOApi<BucketDetailsType>> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    try {
+      const res = await fetch(
+        `${process.env.DROPIO_INGEST_SERVER}/bucket/${process.env.DROPIO_APP_ID!}`,
+        {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${process.env.DROPIO_TOKEN!}`,
+          },
+          signal: controller.signal,
+        },
+      );
+
+      let response: ServerApiResponse<BucketDetailsType> | null = null;
+
+      try {
+        response = (await res.json()) as ServerApiResponse<BucketDetailsType>;
+      } catch (jsonError) {
+        console.error(
+          "Failed to parse JSON from get bucket details dioapi:",
+          jsonError,
+        );
+        return { error: "Failed to parse JSON from get bucket details" };
+      }
+
+      if (response?.code !== 200) {
+        console.log("INGEST_SERVER_ERORR:", response.errors);
+        return { error: response?.message };
+      }
+
+      return { data: response?.data };
+    } catch (error) {
+      console.error("Error get bucket details:", error);
+      return { error: "Error During get bucket details" };
     } finally {
       clearTimeout(timeoutId);
     }
