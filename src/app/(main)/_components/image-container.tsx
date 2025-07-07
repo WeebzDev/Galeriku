@@ -7,6 +7,7 @@ import { ImagePreview } from "@/app/(main)/_components/image-preview";
 import type { DB_ImagesType, DB_TagType } from "@/server/db/schema";
 
 import { AddTagsToImage } from "./add-tags-to-image";
+import { DeleteImagesModal } from "./delete-images";
 
 type ImagesContainerProps = {
   images: DB_ImagesType[];
@@ -33,11 +34,17 @@ export function ImagesContainer(props: ImagesContainerProps) {
   return (
     <>
       {selectedImage.length ? (
-        <AddTagsToImage
-          tags={props.tags}
-          selectedImage={selectedImage}
-          setSelectedImage={setSelectedImage}
-        />
+        <>
+          <AddTagsToImage
+            tags={props.tags}
+            selectedImage={selectedImage}
+            setSelectedImage={setSelectedImage}
+          />
+          <DeleteImagesModal
+            selectedImage={selectedImage}
+            setSelectedImage={setSelectedImage}
+          />
+        </>
       ) : null}
 
       <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4">

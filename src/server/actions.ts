@@ -20,6 +20,7 @@ import {
   type createTagSchemaType,
   type registerFormSchemaType,
 } from "@/schemas";
+import { dioApi } from "./dropio";
 
 export const createFile = async (
   metadata: UploadResult,
@@ -95,6 +96,40 @@ export const changeTagInImage = async (
     .where(inArray(imagesTable.id, selectedImage));
 
   return { success: "Berhasil mengganti tag paga gambar!" };
+};
+
+export const deleteImages = async (
+  selectedImage: string[],
+): Promise<responseActions> => {
+  const { error, user } = await getSession();
+
+  if (error || !user) {
+    return { error: "Mohon Untuk login terlebih dahulu!" };
+  }
+
+  if (!selectedImage.length) {
+    return { error: "Minimal pilih satu gambar!" };
+  }
+
+  const images = await QUERIES.getImagesByIds(selectedImage);
+  const uniqueName = images.map((item) => item.uniqueName);
+
+  console.log({ images, selectedImage, uniqueName });
+
+  if (!uniqueName.length) {
+    return { error: "Gambar Tidak Ditemukan" };
+  }
+
+  const response = await dioApi.delete(uniqueName);
+
+  if (response.success) {
+    await db.delete(imagesTable).where(inArray(imagesTable.id, selectedImage));
+    return { success: "Berhasil menghapus gambar!" };
+  } else {
+    return {
+      success: "Gagal menghapus gambar, mohon coba beberapa menit lagi!",
+    };
+  }
 };
 
 export const login = async (
