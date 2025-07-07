@@ -36,8 +36,7 @@ export const imagesTable = createTable("images", (d) => ({
     .$defaultFn(() => uuidv7()),
   userId: d
     .varchar({ length: 256 })
-    .notNull()
-    .references(() => usersTable.id, { onDelete: "cascade" }),
+    .references(() => usersTable.id, { onDelete: "set null" }),
   tagId: d.varchar({ length: 256 }).notNull().default(""),
   name: d.varchar({ length: 256 }).notNull(),
   uniqueName: d.varchar({ length: 256 }).notNull(),
