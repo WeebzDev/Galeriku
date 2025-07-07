@@ -9,11 +9,13 @@ import { MainSidebar } from "@/components/layout/main-sidebar";
 import { LoadingSpinner } from "@/components/loading/loading-spinner";
 import { MainNavbar } from "@/components/navbar/main-navbar";
 import { getSession } from "@/server/auth";
+import { dioApi } from "@/server/dropio";
 
 export default async function MainLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await getSession();
+  const bucket = await dioApi.bucketDetails();
 
   return (
     <div>
@@ -27,7 +29,7 @@ export default async function MainLayout({
                 </div>
               }
             >
-              <MainSidebar session={session} />
+              <MainSidebar session={session} bucket={bucket.data ?? null} />
             </Suspense>
           </Sidebar>
           <SidebarInset className="w-full flex-1">

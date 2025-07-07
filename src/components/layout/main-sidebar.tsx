@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LogOut } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -28,21 +30,37 @@ import { mainSidebar } from "@/lib/sidebar";
 import { FileUploader } from "@/components/dialog/file-uploader";
 import { CreateTag } from "../dialog/create-tag";
 import { logout } from "@/server/actions";
+import { Progress } from "../ui/progress";
+import { formatFileSize } from "@/lib/utils";
 
 import type { Session } from "@/type/server";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import type { BucketDetailsType } from "@/lib/dropio/server";
 
 type MainSidebarProps = {
   session: Session;
+  bucket: BucketDetailsType | null;
 };
 
 export function MainSidebar(props: MainSidebarProps) {
-  const { session } = props;
+  const { session, bucket } = props;
 
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isCreateTag, setIsCreateTag] = useState<boolean>(false);
+
+  const [storageUsed, setStorageUsage] = useState<number>(
+    bucket?.quotaUsage ?? 0,
+  );
+  const [storageLimit, setStorageLimit] = useState<number>(
+    bucket?.quota ?? 0,
+  );
+
+  useEffect(() => {
+    setStorageUsage(bucket?.quotaUsage ?? 0);
+    setStorageLimit(bucket?.quota ?? 0);
+  }, [bucket]);
+
+  const storagePercentage = (storageUsed / storageLimit) * 100;
 
   const router = useRouter();
 
@@ -121,6 +139,15 @@ export function MainSidebar(props: MainSidebarProps) {
       </SidebarContent>
       <SidebarFooter className="border-t p-4">
         <div className="space-y-4">
+          <div className={"space-y-2"}>
+            <div className={"flex justify-between text-sm"}>
+              <span className="text-muted-foreground">Storage :</span>
+              <span className="font-medium">
+                {`${formatFileSize(storageUsed)} / ${formatFileSize(storageLimit)}`}
+              </span>
+            </div>
+            <Progress value={storagePercentage} className="h-2" />
+          </div>
           <div className="flex items-center gap-4">
             <Avatar>
               <AvatarFallback>

@@ -19,9 +19,7 @@ export function formatFileSize(bytes: number): string {
   );
 }
 
-export async function createJWT(
-  payload: JWTPayload,
-): Promise<string> {
+export async function createJWT(payload: JWTPayload): Promise<string> {
   const encoder = new TextEncoder();
   const secret = env.JWT_SECRET;
 
